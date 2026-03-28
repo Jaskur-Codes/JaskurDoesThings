@@ -1,0 +1,26 @@
+.reaffirmButton {
+    background-color: gray;
+    border-radius: 15px;
+    width: 15%;
+    min-width: 100px;
+}
+
+.affirmationInput {
+    width: 100%;
+    align-content: center;
+}
+
+.reaffirmBody {
+    max-height: 100%;
+    width: 50%;
+}
+
+.affirmationText {
+    width: 50%;
+    justify-content: center;
+}
+
+h1 {
+    font-size: xx-large;
+    font-weight: bolder;
+}
