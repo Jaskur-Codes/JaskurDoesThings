@@ -24,18 +24,38 @@ export default function ReaffirmPage() {
   });
   const [currentAffirmation, setCurrentAffirmation] =
     useState("Tap to Re:Affirm");
-  const [remainingAffirmations, setRemainingAffirmations] = useState<string[]>([]);
+  const [remainingAffirmations, setRemainingAffirmations] = useState(() => {
+    if (typeof window === "undefined") return [];
 
+    const stored = localStorage.getItem("remainingAffirmations");
+    return stored ? JSON.parse(stored) : [];
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [newAffirmation, setNewAffirmation] = useState("");
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
 
   // 💾 Save to localStorage (whenever affirmations change)
   useEffect(() => {
     localStorage.setItem("affirmations", JSON.stringify(affirmations));
-    setRemainingAffirmations(affirmations);
+    localStorage.setItem(
+      "remainingAffirmations",
+      JSON.stringify(remainingAffirmations)
+    );
+
+    setIsSaved(true);
+
+    const timeout = setTimeout(() => setIsSaved(false), 1500);
+
+    return () => clearTimeout(timeout);
+  }, [affirmations, remainingAffirmations]);
+
+  useEffect(() => {
+    setRemainingAffirmations((prev) =>
+      prev.filter((item) => affirmations.includes(item))
+    );
   }, [affirmations]);
 
   // 🎯 Generate affirmation
@@ -43,7 +63,7 @@ export default function ReaffirmPage() {
     let pool = remainingAffirmations;
 
     if (pool.length === 0) {
-      pool = affirmations;
+      pool = [...affirmations];
     }
 
     const randomIndex = Math.floor(Math.random() * pool.length);
@@ -245,6 +265,11 @@ export default function ReaffirmPage() {
                 Close
               </button>
             </div>
+            {isSaved && (
+              <p className="text-sm text-emerald-500 mt-2 transition-opacity duration-300">
+                Saved ✓
+              </p>
+            )}
           </div>
         </div>
       )}
