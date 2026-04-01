@@ -16,7 +16,12 @@ export default function ReaffirmPage() {
 
   const router = useRouter();
 
-  const [affirmations, setAffirmations] = useState(defaultAffirmations);
+  const [affirmations, setAffirmations] = useState(() => {
+    if (typeof window === "undefined") return defaultAffirmations;
+
+    const stored = localStorage.getItem("affirmations");
+    return stored ? JSON.parse(stored) : defaultAffirmations;
+  });
   const [currentAffirmation, setCurrentAffirmation] =
     useState("Tap to Re:Affirm");
   const [remainingAffirmations, setRemainingAffirmations] = useState<string[]>([]);
@@ -26,15 +31,6 @@ export default function ReaffirmPage() {
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState("");
-
-  // 📦 Load from localStorage (on mount)
-  useEffect(() => {
-    const stored = localStorage.getItem("affirmations");
-
-    if (stored) {
-      setAffirmations(JSON.parse(stored));
-    }
-  }, []);
 
   // 💾 Save to localStorage (whenever affirmations change)
   useEffect(() => {
@@ -123,7 +119,7 @@ export default function ReaffirmPage() {
             >
               Manage
             </button>
-            
+
             <button
               className="px-6 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500"
               onClick={handleReaffirm}
@@ -158,7 +154,7 @@ export default function ReaffirmPage() {
 
             <div className="flex justify-end gap-3">
               <button
-                onClick={() => {setIsOpen(false); setIsManageOpen(true);}}
+                onClick={() => { setIsOpen(false); setIsManageOpen(true); }}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
               >
                 Cancel
@@ -238,7 +234,7 @@ export default function ReaffirmPage() {
             <div className="flex justify-end mt-4 gap-4">
               <button
                 className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
-                onClick={() => {setIsOpen(true); setIsManageOpen(false);}}
+                onClick={() => { setIsOpen(true); setIsManageOpen(false); }}
               >
                 Add Affirmation
               </button>
